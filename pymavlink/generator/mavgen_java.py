@@ -284,17 +284,17 @@ public void test(){
 def pack_test_packet(m):
     result = ''
     for field in m.ordered_fields:
+        true_type = field.type_full.replace("Unsigned", "").lower()
         function = 'put'
-        cast = '(%s)' % field.type
+        cast = '(%s)' % true_type
         suffix = 'L'
-        if field.type != "byte":
-            function += field.type.capitalize()
-        if field.type != "long":
+        if true_type != "byte":
+            function += true_type.capitalize()
+        if true_type != "long":
             suffix = ''
         if field.array_length != 0:
             result += '''//%s
             ''' % field.name
-            print("diff: " + str(field.array_length - len(field.test_value)))
             for i in range(0,field.array_length):
                 if i < len(field.test_value):
                     test_value = field.test_value[i]
@@ -695,6 +695,7 @@ def generate_one(basename, xml):
     # fix types to java
     for m in xml.message:
         for f in m.ordered_fields:
+            f.type_full = mavfmt(f, True)
             f.type = mavfmt(f)
 
     generate_CRC(directory, xml)
