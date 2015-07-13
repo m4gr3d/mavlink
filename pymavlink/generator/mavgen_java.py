@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 '''
     Parse a MAVLink protocol XML file and generate a Java implementation
-    
+
     Copyright Andrew Tridgell 2011
     Released under GNU GPL version 3 or later
     '''
@@ -222,7 +222,7 @@ def generate_test(basename, m):
     path=directory.split(os.sep)
     t.write(f, '''
 // MESSAGE ${name} PACKING
-//package com.MAVLink.%s.test;
+package com.MAVLink.%s.test;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Parser;
 import com.MAVLink.%s.CRC;
@@ -284,7 +284,6 @@ public void test(){
 def pack_test_packet(m):
     result = ''
     for field in m.ordered_fields:
-        print(field.c_test_value)
         function = 'put'
         cast = '(%s)' % field.type
         suffix = 'L'
