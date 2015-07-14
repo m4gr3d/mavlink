@@ -222,10 +222,10 @@ def generate_test(basename, m):
     path=directory.split(os.sep)
     t.write(f, '''
 // MESSAGE ${name} PACKING
-package com.MAVLink.%s.test;
+package com.MAVLink.test;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Parser;
-import com.MAVLink.%s.CRC;
+import com.MAVLink.ardupilotmega.CRC;
 import java.nio.ByteBuffer;
 import org.junit.Test;
 
@@ -277,7 +277,7 @@ public void test(){
     assertArrayEquals("msg_${name_lower}", processedPacket, packet);
 }
 }
-        ''' % (path[len(path)-2],path[len(path)-2], pack_test_packet(m)), m)
+        ''' % (pack_test_packet(m)), m)
     f.close()
 
 
@@ -539,7 +539,7 @@ def generate_one(basename, xml):
 
     print("Generating Java implementation in directory %s" % directory)
     mavparse.mkdir_p(directory)
-    mavparse.mkdir_p(os.path.join(directory, '''test'''))
+    mavparse.mkdir_p(os.path.join(basename, '''test'''))
 
     if xml.little_endian:
         xml.mavlink_endian = "MAVLINK_LITTLE_ENDIAN"
@@ -702,7 +702,7 @@ def generate_one(basename, xml):
 
     for m in xml.message:
         generate_message_h(directory, m)
-        generate_test(directory, m)
+        generate_test(basename, m)
 
 def generate(basename, xml_list):
     '''generate complete MAVLink Java implemenation'''
