@@ -294,7 +294,7 @@ def pack_test_packet(m):
             suffix = ''
         if field.array_length != 0:
             result += '''//%s
-            ''' % field.name
+    ''' % field.name
             for i in range(0,field.array_length):
                 if i < len(field.test_value):
                     test_value = field.test_value[i]
@@ -302,11 +302,11 @@ def pack_test_packet(m):
                     test_value = field.test_value[:1]
                 if str(test_value).isalpha():
                     test_value = "'" + test_value + "'"
-                result += '''payload.%s(%s%s%s);
-            ''' % (function,cast,test_value, suffix)
+                result +='''payload.%s(%s%s%s);
+    ''' % (function,cast,test_value, suffix)
         else:
-            result += '''payload.%s(%s%s%s); //%s
-            ''' % (function, cast, field.test_value, suffix, field.name)
+            result +='''payload.%s(%s%s%s); //%s
+    ''' % (function, cast, field.test_value, suffix, field.name)
     return result
 
 
