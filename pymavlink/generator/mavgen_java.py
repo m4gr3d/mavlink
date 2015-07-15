@@ -220,7 +220,7 @@ def generate_test(directory, m):
     path=directory.split(os.sep)
     t.write(f, '''
 // MESSAGE ${name} PACKING
-package test.com.MAVLink.%s;
+package com.MAVLink.%s;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Parser;
 import com.MAVLink.ardupilotmega.CRC;
@@ -533,7 +533,7 @@ def mavfmt(field, typeInfo=False):
 def generate_one(basename, xml):
     '''generate headers for one XML file'''
 
-    directory = os.path.join(basename, 'com', 'MAVLink', xml.basename)
+    directory = os.path.join(basename, 'src', 'com', 'MAVLink', xml.basename)
     path = os.path.split(basename)
 
     directory_test = os.path.join(basename, 'test', 'com', 'MAVLink', xml.basename)
@@ -708,7 +708,7 @@ def generate_one(basename, xml):
 
 def generate(basename, xml_list):
     '''generate complete MAVLink Java implemenation'''
-    basename_package=os.path.join(basename, 'com', 'MAVLink')
+    basename_package=os.path.join(basename, 'src', 'com', 'MAVLink')
     for xml in xml_list:
         generate_one(basename, xml)
         generate_enums(basename_package, xml)
