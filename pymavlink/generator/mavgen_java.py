@@ -214,15 +214,13 @@ public class msg_${name_lower} extends MAVLinkMessage{
     f.close()
 
 
-def generate_test(basename, m):
+def generate_test(directory, m):
     '''generate per-message header for a XML file'''
-    directory = os.path.join(basename, '''test''')
     f = open(os.path.join(directory, 'msg_%s_test.java' % m.name_lower), mode='w')
-
     path=directory.split(os.sep)
     t.write(f, '''
 // MESSAGE ${name} PACKING
-package com.MAVLink.test;
+package test.com.MAVLink.%s;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Parser;
 import com.MAVLink.ardupilotmega.CRC;
@@ -277,7 +275,7 @@ public void test(){
     assertArrayEquals("msg_${name_lower}", processedPacket, packet);
 }
 }
-        ''' % (pack_test_packet(m)), m)
+        ''' % (path[len(path)-1], pack_test_packet(m)), m)
     f.close()
 
 
@@ -294,7 +292,7 @@ def pack_test_packet(m):
             suffix = ''
         if field.array_length != 0:
             result += '''//%s
-            ''' % field.name
+    ''' % field.name
             for i in range(0,field.array_length):
                 if i < len(field.test_value):
                     test_value = field.test_value[i]
@@ -302,11 +300,11 @@ def pack_test_packet(m):
                     test_value = field.test_value[:1]
                 if str(test_value).isalpha():
                     test_value = "'" + test_value + "'"
-                result += '''payload.%s(%s%s%s);
-            ''' % (function,cast,test_value, suffix)
+                result +='''payload.%s(%s%s%s);
+    ''' % (function,cast,test_value, suffix)
         else:
-            result += '''payload.%s(%s%s%s); //%s
-            ''' % (function, cast, field.test_value, suffix, field.name)
+            result +='''payload.%s(%s%s%s); //%s
+    ''' % (function, cast, field.test_value, suffix, field.name)
     return result
 
 
@@ -535,11 +533,15 @@ def mavfmt(field, typeInfo=False):
 def generate_one(basename, xml):
     '''generate headers for one XML file'''
 
-    directory = os.path.join(basename, xml.basename)
+    directory = os.path.join(basename, 'com', 'MAVLink', xml.basename)
+    path = os.path.split(basename)
+
+    directory_test = os.path.join(basename, 'test', 'com', 'MAVLink', xml.basename)
 
     print("Generating Java implementation in directory %s" % directory)
     mavparse.mkdir_p(directory)
-    mavparse.mkdir_p(os.path.join(basename, '''test'''))
+    print(basename)
+    mavparse.mkdir_p(directory_test)
 
     if xml.little_endian:
         xml.mavlink_endian = "MAVLINK_LITTLE_ENDIAN"
@@ -702,12 +704,13 @@ def generate_one(basename, xml):
 
     for m in xml.message:
         generate_message_h(directory, m)
-        generate_test(basename, m)
+        generate_test(directory_test, m)
 
 def generate(basename, xml_list):
     '''generate complete MAVLink Java implemenation'''
+    basename_package=os.path.join(basename, 'com', 'MAVLink')
     for xml in xml_list:
         generate_one(basename, xml)
-        generate_enums(basename, xml)
-        generate_MAVLinkMessage(basename, xml_list)
-    copy_fixed_headers(basename, xml_list[0])
+        generate_enums(basename_package, xml)
+        generate_MAVLinkMessage(basename_package, xml_list)
+    copy_fixed_headers(basename_package, xml_list[0])
